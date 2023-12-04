@@ -4,9 +4,11 @@ def script():
     with open('input.txt', 'r') as readfile:
         lines = readfile.readlines()
         for line in lines:
-            data.append(parse_line(line))
+            #data.append(parse_line_part1(line))
+            data.append(parse_line_part2(line))
         print(data)
-        process_matrix(data)
+        #process_matrix(data)
+        process_matrix_part2(data)
     return
 
 
@@ -25,6 +27,22 @@ def process_matrix(data):
             
         line_count+=1
     print(numbers)
+
+def process_matrix_part2(data):
+    line_count = 0
+    gears = 0
+    for line in data:
+        for el in line:
+            if el['type'] == 'operator':
+                print(f'Operator detected [{line_count}, {el["index"]}], parsing adjacent lines')
+                adj = get_adjacent_numbers(line_count, el['index'], data)
+                if(len(adj) == 2):
+                    print(f'GOOD GEAR DETECTED : {adj[0]}, {adj[1]} ')
+                    print(f'GEAR RATIO: {int(adj[0]) * int(adj[1])}')
+                    gears+= (int(adj[0]) * int(adj[1]))
+            
+        line_count+=1
+    print(gears)
 
 def get_adjacent_numbers(x, y, data):
     numbers = []
@@ -51,7 +69,7 @@ def is_a_number(x, y, data: list):
     print(numbers)
     return numbers
 
-def parse_line(line):
+def parse_line_part1(line):
     line_data= []
     str_num = ''
     index = 0
@@ -72,6 +90,34 @@ def parse_line(line):
                 })
                 str_num = ''
             if char != '.' and char != '\n':
+                line_data.append({
+                    'type': 'operator',
+                    'index': index
+                })
+        index+=1
+    return line_data
+
+def parse_line_part2(line):
+    line_data= []
+    str_num = ''
+    index = 0
+    index_beg = 0
+    char: str
+    for char in line:
+        if char.isdigit():
+            if str_num == '':
+                index_beg = index
+            str_num+=char
+        else:
+            if str_num != '':
+                line_data.append({
+                    'type': 'number',
+                    'value': str_num,
+                    'index_beg': index_beg,
+                    'index_end': index-1,
+                })
+                str_num = ''
+            if char == '*':
                 line_data.append({
                     'type': 'operator',
                     'index': index
