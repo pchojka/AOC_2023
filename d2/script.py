@@ -36,14 +36,33 @@ def script():
                 'max_green': max_green,
                 'max_blue': max_blue
             })
+    print(process_games(games))
+    print(process_power(games))
+
+
+def process_games (games):
+    count = 0
     for game in games:
-        if game['max_red'] <= ref['max_red'] and game['max_blue'] <= ref['max_blue'] and game['max_green'] <= ref['max_green']:
+        if is_game_possible(game, ref):
             print(f"GAME {game['id']} : POSSIBLE")
             count+= int(game['id'])
         else:
             print(f"GAME {game['id']}: IMPOSSIBLE")
-    
-    print(count)
+    return count
+
+def process_power(games):
+    count = 0
+    for game in games:
+        power = game['max_red'] * game['max_green'] * game['max_blue']
+        count+= power
+    return count
+
+
+
+
+def is_game_possible(game, ref):
+    return game['max_red'] <= ref['max_red'] and game['max_blue'] <= ref['max_blue'] and game['max_green'] <= ref['max_green']
+
 
             
             
